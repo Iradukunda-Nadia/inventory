@@ -209,62 +209,67 @@ class _DashboardState extends State<Dashboard> {
                       stream: Firestore.instance.collection("company").document('pelt').snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          return Flexible(
-                            child: new ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: 1,
-                              itemBuilder: (BuildContext context, int index) {
-                                return new IntrinsicHeight(
-                                    child: new Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: <Widget>[
-                                       GestureDetector(
-                                          onTap: (){
-                                            Navigator.of(context).push(new CupertinoPageRoute(
-                                                builder: (context) => Suppliers()));
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: new ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: 1,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return new IntrinsicHeight(
+                                        child: new Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: <Widget>[
+                                           GestureDetector(
+                                              onTap: (){
+                                                Navigator.of(context).push(new CupertinoPageRoute(
+                                                    builder: (context) => Suppliers()));
 
-                                          },
-                                          child: Center(
-                                            child: Column(
-                                              children: [
-                                                Text('${snapshot.data['suppliers'
-                                                  ].toString()}+',
-                                                  style: new TextStyle(
-                                                    fontSize: 40.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black87,
-                                                  ),),
-                                                Text('SUPPLIER \n Reports'),
-                                              ],
+                                              },
+                                              child: Center(
+                                                child: Column(
+                                                  children: [
+                                                    Text('${snapshot.data['suppliers'
+                                                      ].toString()}+',
+                                                      style: new TextStyle(
+                                                        fontSize: 40.0,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.black87,
+                                                      ),),
+                                                    Text('SUPPLIER \n Reports'),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        VerticalDivider(color: Colors.purpleAccent),
-                                        GestureDetector(
-                                          onTap: (){
-                                            Navigator.of(context).push(new CupertinoPageRoute(
-                                                builder: (context) => issuanceReport()));
+                                            VerticalDivider(color: Colors.purpleAccent),
+                                            GestureDetector(
+                                              onTap: (){
+                                                Navigator.of(context).push(new CupertinoPageRoute(
+                                                    builder: (context) => issuanceReport()));
 
-                                          },
-                                          child: Center(
-                                            child: Column(
-                                              children: [
-                                                Text('3+',
-                                                  style: new TextStyle(
-                                                    fontSize: 40.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black87,
-                                                  ),),
-                                                Text('ISSUANCE \n Reports'),
-                                              ],
+                                              },
+                                              child: Center(
+                                                child: Column(
+                                                  children: [
+                                                    Text('3+',
+                                                      style: new TextStyle(
+                                                        fontSize: 40.0,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.black87,
+                                                      ),),
+                                                    Text('ISSUANCE \n Reports'),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                    ));
-                              },
-                            ),
+                                          ],
+                                        ));
+                                  },
+                                ),
+                              ),
+                            ],
                           );
                         } else {
                           return Text('');
