@@ -76,6 +76,7 @@ class _issueState extends State<issue> {
                                       id: doc['id'],
                                       assign: doc['assign'],
                                       region: doc['region'],
+                                      pfn: doc['pfn'],
                                       docID: doc.documentID,
                                       )));
                               },

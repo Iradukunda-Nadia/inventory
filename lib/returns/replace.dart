@@ -352,6 +352,7 @@ class _detailsState extends State<details> {
                       color: Colors.black,
                       fontFamily: 'SFUIDisplay'
                   ),
+
                   decoration: InputDecoration(
 
                       errorStyle: TextStyle(color: Colors.red),
@@ -586,10 +587,9 @@ class _detailsState extends State<details> {
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(0.0,0.0,10.0,0.0),
                         child: FormBuilderSignaturePad(
-                          enabled: isLoading == true ? false: true,
                           controller: _controller,
                           decoration: InputDecoration(labelText: "Signature"),
-                          name: "signature",
+                          attribute: "signature",
                           height: 150,
 
                         ),

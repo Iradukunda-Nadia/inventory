@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/scheduler.dart';
@@ -124,14 +125,14 @@ class _supRepState extends State<supRep> {
                     padding: const EdgeInsets.all(8.0),
                     child: FormBuilderDateTimePicker(
                       initialEntryMode: DatePickerEntryMode.calendar,
-                      pickerType: PickerType.cupertino,
-                      name: 'dDate',
+                      initialDatePickerMode: DatePickerMode.year,
+                      attribute: 'dDate',
                       inputType: InputType.date,
                       format: DateFormat(" yyyy- MM"),
                       valueTransformer: (value) {
                         return value.toString().substring(0,10);
                       },
-                      validator: FormBuilderValidators.required(context),
+                      validators: [FormBuilderValidators.required()],
                       decoration:
                       InputDecoration(
                         labelText: "Select Month and year",

@@ -23,9 +23,11 @@ class guardProfile extends StatefulWidget {
   String docID;
   String assign;
   String region;
+  String pfn;
 
   guardProfile({
   this.uniform,
+  this.pfn,
   this.name,
   this.assets,
   this.id,
@@ -156,6 +158,7 @@ class _guardProfileState extends State<guardProfile> {
               name: widget.name,
               id: widget.id,
               docID: widget.docID,
+              pfn: widget.pfn,
             )));
         },
       ),
@@ -197,7 +200,7 @@ class _guardProfileState extends State<guardProfile> {
                              width: 10,
                            ),
                            Text(
-                             'PF NO: ${widget.name}'
+                             'PF NO: ${widget.pfn}'
                              ,style: TextStyle(
                                fontSize: 14.0,
                                color:Colors.blueGrey,
@@ -412,9 +415,10 @@ class SOF extends StatefulWidget {
   String name;
   String id;
   String docID;
+  String pfn;
 
   SOF({
-    this.name, this.id, this.docID
+    this.name, this.id, this.docID, this.pfn
 });
 
   @override
@@ -589,8 +593,26 @@ class _SOFState extends State<SOF> {
           'sig': bs64,
 
         }, merge: true);
+        if (itemTECs[i].text == 'Boots' || itemTECs[i].text == 'Torch' ){
+          Firestore.instance.collection('deductions')
+              .document(
+              '${widget.id}-${DateFormat('yyyy-MM-dd').format(DateTime.now())}')
+              .setData({
+            'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+            'timestamp': DateTime.now(),
+            'id': widget.id,
+            'name': widget.name,
+            'pfn': widget.pfn,
 
-
+          }, merge: true);
+          Firestore.instance.collection('deductions')
+              .document(
+              '${widget.id}-${DateFormat('yyyy-MM-dd').format(DateTime.now())}')
+              .updateData({
+            'Items.${itemTECs[i].text}': FieldValue.increment(
+                int.parse(qtTECs[i].text)),
+          });
+        }
         Firestore.instance.collection('issued')
             .document(
             '${widget.id}-${DateFormat('yyyy-MM-dd').format(DateTime.now())}')
@@ -686,10 +708,9 @@ class _SOFState extends State<SOF> {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0.0,0.0,10.0,0.0),
                           child: FormBuilderSignaturePad(
-                            enabled: isLoading == true ? false: true,
                             controller: _controller,
                             decoration: InputDecoration(labelText: "Signature"),
-                            name: "signature",
+                            attribute: "signature",
                             height: 150,
 
                           ),

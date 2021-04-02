@@ -324,9 +324,10 @@ class _detailsState extends State<details> {
   var qtTECs = <TextEditingController>[];
   var cards = <Card>[];
   bool see;
+  var itemController = TextEditingController();
+  var qtController = TextEditingController();
   Card createCard() {
-    var itemController = TextEditingController();
-    var qtController = TextEditingController();
+
     itemTECs.add(itemController);
     qtTECs.add(qtController);
     return Card(
@@ -335,40 +336,37 @@ class _detailsState extends State<details> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text('Item ${cards.length + 1}'),
-            SizedBox(
-              height: 60.0,
-              child:  new StreamBuilder<QuerySnapshot>(
-                  stream: Firestore.instance.collection("inStock").snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return new Text("Please wait");
-                    var length = snapshot.data.documents.length;
-                    DocumentSnapshot ds = snapshot.data.documents[length - 1];
-                    return new DropdownButtonFormField(
-                      items: snapshot.data.documents.map((
-                          DocumentSnapshot document) {
-                        return DropdownMenuItem(
-                            value: document.data["item"],
-                            child: new Text(document.data["item"]));
-                      }).toList(),
-                      validator: (value) => value == null
-                          ? 'Please Select a Item' : null,
-                      onChanged: (value) {
-                        print(value);
-                        setState(() {
-                          itemController.text = value;
-                        });
-                      },
-                      hint: new Text("Select Item"),
-                      style: TextStyle(color: Colors.black),
-                    );
-                  }
-              ),
+            new StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance.collection("inStock").snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return new Text("Please wait");
+                  var length = snapshot.data.documents.length;
+                  DocumentSnapshot ds = snapshot.data.documents[length - 1];
+                  return FormBuilderDropdown(
+                    attribute: 'item',
+                    items: snapshot.data.documents.map((
+                        DocumentSnapshot document) {
+                      return DropdownMenuItem(
+                          value: document.data["item"],
+                          child: new Text(document.data["item"]));
+                    }).toList(),
+                    validators: [FormBuilderValidators.required()],
+                    onChanged: (value) {
+                      print(value);
+                      setState(() {
+                        itemController.text = value;
+                      });
+                    },
+                    hint: new Text("Select Item"),
+                    style: TextStyle(color: Colors.black),
+                  );
+                }
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Container(
                 child: TextFormField(
-                  enabled: isLoading == true ? false: true,
+
                   controller: qtController,
                   keyboardType: TextInputType.numberWithOptions(decimal: false),
                   style: TextStyle(
@@ -409,13 +407,13 @@ class _detailsState extends State<details> {
       ),
     );
   }
-
   @override
   void initState() {
     super.initState();
     cards.add(createCard());
     isLoading = false;
   }
+
   final formKey = GlobalKey<FormState>();
   void _submitCommand() {
     //get state of our Form
@@ -558,96 +556,100 @@ String reason;
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        child: Form  (
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  enabled: isLoading == true ? false: true,
+        child: Column(
+          children: [
+            Form  (
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
 
-                  style: TextStyle(
-                      color: Colors.black,
-                  ),
-                  decoration: InputDecoration(
+                      style: TextStyle(
+                          color: Colors.black,
+                      ),
+                      decoration: InputDecoration(
 
-                      errorStyle: TextStyle(color: Colors.red),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
-                      labelText: 'Reason for being discharged',
+                          errorStyle: TextStyle(color: Colors.red),
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.1),
+                          labelText: 'Reason for being discharged',
 
-                  ),
-                  validator: (val) =>
-                  val.isEmpty  ? 'Field cannot be empty' : null,
-                  onChanged: (val){
-                    reason = val;
-                  },
-                  onSaved: (val){
-                    reason = val;
-                  },
-
-                ),
-              ),
-              Flexible(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: cards.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return cards[index];
+                      ),
+                      validator: (val) =>
+                      val.isEmpty  ? 'Field cannot be empty' : null,
+                      onChanged: (val){
+                        reason = val;
                       },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: RaisedButton(
-                        child: Text('add another item'),
-                        onPressed: () => setState(() => cards.add(createCard())),
-                      ),
-                    ),
-                    FormBuilder(
-                      key: _signKey,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0.0,0.0,10.0,0.0),
-                        child: FormBuilderSignaturePad(
-                          enabled: isLoading == true ? false: true,
-                          controller: _controller,
-                          decoration: InputDecoration(labelText: "Signature"),
-                          name: "signature",
-                          height: 150,
+                      onSaved: (val){
+                        reason = val;
+                      },
 
+                    ),
+                  ),
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: cards.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return cards[index];
+                          },
                         ),
-                      ),),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(70, 10, 70, 0),
-                      child: MaterialButton(
-                        onPressed: isLoading == true ? null: _submitCommand,
-                        child : Text( isLoading == true? 'Loading ...':'Submit',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'SFUIDisplay',
-                            fontWeight: FontWeight.bold,
-                          ),),
-                        color: Colors.white,
-                        elevation: 16.0,
-                        minWidth: 400,
-                        height: 50,
-                        textColor: Colors.purple[300],
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: RaisedButton(
+                            child: Text('add another item'),
+                            onPressed: () => setState(() => cards.add(createCard())),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+
+                      ],
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+            FormBuilder(
+              key: _signKey,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0.0,0.0,10.0,0.0),
+                child: FormBuilderSignaturePad(
+                  controller: _controller,
+                  decoration: InputDecoration(labelText: "Signature"),
+                  attribute: "signature",
+                  height: 150,
+
                 ),
               ),
-
-            ],
-          ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(70, 10, 70, 0),
+              child: MaterialButton(
+                onPressed: isLoading == true ? null: _submitCommand,
+                child : Text( isLoading == true? 'Loading ...':'Submit',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'SFUIDisplay',
+                    fontWeight: FontWeight.bold,
+                  ),),
+                color: Colors.white,
+                elevation: 16.0,
+                minWidth: 400,
+                height: 50,
+                textColor: Colors.purple[300],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
