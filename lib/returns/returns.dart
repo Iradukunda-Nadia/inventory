@@ -69,37 +69,33 @@ class _ReturnState extends State<Return> {
                         return ListView(
                             children: documents
                             // ignore: missing_return
-                                .map((doc) => Card(
-                              child: doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) || doc['id'].contains(searchController.text.toLowerCase()) ?
-                              ListTile(
-                                onTap: () {
-                                  Navigator.of(context).push(new CupertinoPageRoute(
-                                      builder: (context) => Clearance(
-                                        uniform: Map<String, dynamic>.from(doc.data["uniform"]),
-                                        name: doc['name'].toUpperCase(),
-                                        id: doc['id'],
-                                        assign: doc['assign'],
-                                        region: doc['region'],
-                                        docID: doc.documentID,
-                                        reason: doc['reason'],
-                                        dateCleared: doc['dateCleared'],
-                                        pfn: doc['pfn'],
-                                      )));
-                                },
-                                leading: CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: NetworkImage(
-                                    'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png',
-                                  ),
+                                .map((doc) => doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) || doc['id'].contains(searchController.text.toLowerCase()) ?
+                            ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(new CupertinoPageRoute(
+                                    builder: (context) => Clearance(
+                                      uniform: Map<String, dynamic>.from(doc.data["uniform"]),
+                                      name: doc['name'].toUpperCase(),
+                                      id: doc['id'],
+                                      assign: doc['assign'],
+                                      region: doc['region'],
+                                      docID: doc.documentID,
+                                      reason: doc['reason'],
+                                      dateCleared: doc['dateCleared'],
+                                      pfn: doc['pfn'],
+                                    )));
+                              },
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundImage: NetworkImage(
+                                  'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png',
                                 ),
-                                title: Text(doc['name'].toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                subtitle: Text('ID: ${doc['id']}'),
-                              ): new Offstage(),
-                            ))
+                              ),
+                              title: Text(doc['name'].toUpperCase(),
+
+                              ),
+                              subtitle: Text('ID: ${doc['id']}'),
+                            ): new Offstage(),)
                                 .toList());
                       } else {
                         return Text('');

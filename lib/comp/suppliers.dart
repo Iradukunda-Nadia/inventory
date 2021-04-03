@@ -167,22 +167,18 @@ class _suppliersSummaryState extends State<suppliersSummary> {
                         return ListView(
                             children: documents
                             // ignore: missing_return
-                                .map((doc) => Card(
-                              child: doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) ?
-                              ListTile(
-                                onTap: () {
-                                  Navigator.of(context).push(new CupertinoPageRoute(
-                                      builder: (context) => supRep(
-                                        supplier: doc['name'],
-                                      )));
-                                },
-                                title: Text(doc['name'].toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ): new Offstage(),
-                            ))
+                                .map((doc) => doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) ?
+                            ListTile(
+                              onTap: () {
+                                Navigator.of(context).push(new CupertinoPageRoute(
+                                    builder: (context) => supRep(
+                                      supplier: doc['name'],
+                                    )));
+                              },
+                              title: Text(doc['name'].toUpperCase(),
+
+                              ),
+                            ): new Offstage(),)
                                 .toList());
                       } else {
                         return Text('');

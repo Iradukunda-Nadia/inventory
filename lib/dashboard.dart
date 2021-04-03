@@ -10631,7 +10631,7 @@ class _DashboardState extends State<Dashboard> {
      await reference.add({
        'date': DateFormat(' yyyy- MM - dd').format(DateTime.now()),
        "name": myArray[i]['name'],
-       'id': myArray[i]['id'],
+       'id': myArray[i]['id'].toString(),
        'company': 'pelt',
        'assign': myArray[i]['assign'],
        'region': myArray[i]['region'],
@@ -10931,7 +10931,7 @@ class _DashboardState extends State<Dashboard> {
                                                         fontWeight: FontWeight.bold,
                                                         color: Colors.black87,
                                                       ),),
-                                                    Text('Deduction \n Reports'),
+                                                    Text('DEDUCTIONS \n Reports'),
                                                   ],
                                                 ),
                                               ),
