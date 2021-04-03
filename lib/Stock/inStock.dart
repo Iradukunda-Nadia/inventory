@@ -33,6 +33,8 @@ class _inStockState extends State<inStock> {
       _cat = "uniform";
     });
   }
+  var qtController = TextEditingController();
+  var upController = TextEditingController();
 
   void _submitCommand() {
     //get state of our Form
@@ -328,6 +330,7 @@ class _inStockState extends State<inStock> {
                         padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                         child: Container(
                           child: TextFormField(
+                            controller: qtController,
                             keyboardType: TextInputType.numberWithOptions(decimal: false),
                             textCapitalization: TextCapitalization.sentences,
                             style: TextStyle(
@@ -362,6 +365,7 @@ class _inStockState extends State<inStock> {
                         padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                         child: Container(
                           child: TextFormField(
+                            controller: upController,
                             keyboardType: TextInputType.numberWithOptions(decimal: false),
                             textCapitalization: TextCapitalization.sentences,
                             style: TextStyle(
@@ -395,7 +399,7 @@ class _inStockState extends State<inStock> {
                         padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                         child: ListTile(
                           title: Text('Total (KSH)', style: TextStyle(fontSize: 11),),
-                          subtitle:  Text(qt == '' || up == '' ? '...':(int.parse(qt)*int.parse(up)).toString()),
+                          subtitle:  Text(qtController.text == '' || upController.text == '' ? '...':(int.parse(qtController.text)*int.parse(upController.text)).toString()),
                         ),
                       ),
 
