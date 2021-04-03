@@ -38,7 +38,7 @@ class _SuppliersState extends State<Suppliers> {
         backgroundColor: const Color(0xffC3B1E1),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        label: new Text('New Staff'),
+        label: new Text('New Supplier'),
         //Widget to display inside Floating Action Button, can be `Text`, `Icon` or any widget.
         onPressed: () {
           Navigator.of(context).push(new CupertinoPageRoute(
