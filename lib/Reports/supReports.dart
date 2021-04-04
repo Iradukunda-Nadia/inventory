@@ -125,7 +125,6 @@ class _supRepState extends State<supRep> {
                     padding: const EdgeInsets.all(8.0),
                     child: FormBuilderDateTimePicker(
                       initialEntryMode: DatePickerEntryMode.calendar,
-                      initialDatePickerMode: DatePickerMode.year,
                       attribute: 'dDate',
                       inputType: InputType.date,
                       format: DateFormat(" yyyy- MM"),
@@ -135,7 +134,7 @@ class _supRepState extends State<supRep> {
                       validators: [FormBuilderValidators.required()],
                       decoration:
                       InputDecoration(
-                        labelText: "Select Month and year",
+                        labelText: "Select 1st of any Month and year",
                         hintText:'Month & Year',
                         prefixIcon: Icon(Icons.date_range),
                           border: OutlineInputBorder(

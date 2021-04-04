@@ -79,18 +79,23 @@ class _SuppliersState extends State<Suppliers> {
                               children: documents
                               // ignore: missing_return
                                   .map((doc) => doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) ?
-                                  ListTile(
-                                    onTap: () {
-                                      Navigator.of(context).push(new CupertinoPageRoute(
-                                          builder: (context) => supRep(
-                                            supplier: doc['name'],
-                                          )));
-                                    },
-                                    title: Text(doc['name'],
-                                      style: TextStyle(
-                                        fontSize: 20,
+                                  Column(
+                                    children: [
+                                      ListTile(
+                                        onTap: () {
+                                          Navigator.of(context).push(new CupertinoPageRoute(
+                                              builder: (context) => supRep(
+                                                supplier: doc['name'],
+                                              )));
+                                        },
+                                        title: Text(doc['name'],
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Divider(),
+                                    ],
                                   ): new Offstage())
                                   .toList());
                         } else {

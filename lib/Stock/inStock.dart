@@ -133,36 +133,32 @@ class _inStockState extends State<inStock> {
                           return Center(
                             child: Text("There is no data"),);
                         }else{
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return new GestureDetector(
-                                onTap: (){},
-                                child: new Card(
-                                  child: Stack(
-                                    alignment: FractionalOffset.topLeft,
-                                    children: <Widget>[
-                                      new ListTile(
-                                        title: new Text("${snapshot.data[index].data["item"]}",
-                                          style: new TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 25.0,
-                                              ),),
-                                        trailing: new Text("${(snapshot.data[index].data["count"]).toString()}",
-                                          style: new TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 30.0,
-                                              ),),
-                                      ),
+                          final List<DocumentSnapshot> documents = snapshot.data.documents;
+                          return ListView(
+                          children: documents
+                          // ignore: missing_return
 
-                                    ],
-                                  ),
+                              .map((doc) => new Card(
+                            child: Stack(
+                              alignment: FractionalOffset.topLeft,
+                              children: <Widget>[
+                                new ListTile(
+                                  title: new Text("${doc.data["item"]}",
+                                    style: new TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 25.0,
+                                    ),),
+                                  trailing: new Text("${(doc.data["count"]).toString()}",
+                                    style: new TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 30.0,
+                                    ),),
                                 ),
-                              );
 
-                            },
-                          );
+                              ],
+                            ),
+                          ),)
+                            .toList());
 
                         }
                       }),)
