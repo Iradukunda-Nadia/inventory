@@ -10907,7 +10907,7 @@ class _DashboardState extends State<Dashboard> {
                                                 child: Column(
                                                   children: [
                                                     Text(snapshot.data['issuance'
-                                                    ] > 100 ? '100+': '${snapshot.data['suppliers'
+                                                    ] > 100 ? '100+': '${snapshot.data['issuance'
                                                     ].toString()}+',
                                                       style: new TextStyle(
                                                         fontSize: 30.0,
@@ -10929,7 +10929,7 @@ class _DashboardState extends State<Dashboard> {
                                                 child: Column(
                                                   children: [
                                                     Text(snapshot.data['deductions'
-                                                    ] > 100 ? '100+': '${snapshot.data['suppliers'
+                                                    ] > 100 ? '100+': '${snapshot.data['deductions'
                                                     ].toString()}+',
                                                       style: new TextStyle(
                                                         fontSize: 30.0,
