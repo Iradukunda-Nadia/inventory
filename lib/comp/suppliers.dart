@@ -78,22 +78,20 @@ class _SuppliersState extends State<Suppliers> {
                           return ListView(
                               children: documents
                               // ignore: missing_return
-                                  .map((doc) => Card(
-                                child: doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) ?
-                                ListTile(
-                                  onTap: () {
-                                    Navigator.of(context).push(new CupertinoPageRoute(
-                                        builder: (context) => supRep(
-                                          supplier: doc['name'],
-                                        )));
-                                  },
-                                  title: Text(doc['name'],
-                                    style: TextStyle(
-                                      fontSize: 20,
+                                  .map((doc) => doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) ?
+                                  ListTile(
+                                    onTap: () {
+                                      Navigator.of(context).push(new CupertinoPageRoute(
+                                          builder: (context) => supRep(
+                                            supplier: doc['name'],
+                                          )));
+                                    },
+                                    title: Text(doc['name'],
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
                                     ),
-                                  ),
-                                ): new Offstage(),
-                              ))
+                                  ): new Offstage())
                                   .toList());
                         } else {
                           return Text('');
@@ -103,90 +101,6 @@ class _SuppliersState extends State<Suppliers> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-class suppliersSummary extends StatefulWidget {
-  @override
-  _suppliersSummaryState createState() => _suppliersSummaryState();
-}
-
-class _suppliersSummaryState extends State<suppliersSummary> {
-  TextEditingController searchController = TextEditingController();
-  String sQuery;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    sQuery = '';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Suppliers'),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        label: new Text('New Supplier'),
-        //Widget to display inside Floating Action Button, can be `Text`, `Icon` or any widget.
-        onPressed: () {},
-      ),
-      body: Container(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-
-                  });
-                },
-                controller: searchController,
-                decoration: InputDecoration(
-                    labelText: "Enter name",
-                    hintText: "Name",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-              ),
-            ),
-            Expanded(
-                child: new StreamBuilder(
-                    stream: Firestore.instance.collection("suppliers").snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        // <3> Retrieve `List<DocumentSnapshot>` from snapshot
-                        // ignore: missing_return
-                        final List<DocumentSnapshot> documents = snapshot.data.documents;
-                        return ListView(
-                            children: documents
-                            // ignore: missing_return
-                                .map((doc) => doc['name'].toLowerCase().contains(searchController.text.toLowerCase()) ?
-                            ListTile(
-                              onTap: () {
-                                Navigator.of(context).push(new CupertinoPageRoute(
-                                    builder: (context) => supRep(
-                                      supplier: doc['name'],
-                                    )));
-                              },
-                              title: Text(doc['name'].toUpperCase(),
-
-                              ),
-                            ): new Offstage(),)
-                                .toList());
-                      } else {
-                        return Text('');
-                      }
-
-                    })
-            ),
-          ],
         ),
       ),
     );

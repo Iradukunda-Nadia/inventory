@@ -603,6 +603,7 @@ class _SOFState extends State<SOF> {
             'id': widget.id,
             'name': widget.name,
             'pfn': widget.pfn,
+            'company': 'pelt',
 
           }, merge: true);
           Firestore.instance.collection('deductions')

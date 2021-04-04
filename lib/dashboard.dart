@@ -10884,7 +10884,8 @@ class _DashboardState extends State<Dashboard> {
                                               child: Center(
                                                 child: Column(
                                                   children: [
-                                                    Text('${snapshot.data['suppliers'
+                                                    Text(snapshot.data['suppliers'
+                                                    ] > 100 ? '100+': '${snapshot.data['suppliers'
                                                       ].toString()}+',
                                                       style: new TextStyle(
                                                         fontSize: 30.0,
@@ -10905,7 +10906,9 @@ class _DashboardState extends State<Dashboard> {
                                               child: Center(
                                                 child: Column(
                                                   children: [
-                                                    Text('10 +',
+                                                    Text(snapshot.data['issuance'
+                                                    ] > 100 ? '100+': '${snapshot.data['suppliers'
+                                                    ].toString()}+',
                                                       style: new TextStyle(
                                                         fontSize: 30.0,
                                                         fontWeight: FontWeight.bold,
@@ -10925,7 +10928,9 @@ class _DashboardState extends State<Dashboard> {
                                               child: Center(
                                                 child: Column(
                                                   children: [
-                                                    Text('10+',
+                                                    Text(snapshot.data['deductions'
+                                                    ] > 100 ? '100+': '${snapshot.data['suppliers'
+                                                    ].toString()}+',
                                                       style: new TextStyle(
                                                         fontSize: 30.0,
                                                         fontWeight: FontWeight.bold,
