@@ -6,8 +6,10 @@ import 'package:inventory/Reports/issuanceReport.dart';
 import 'package:inventory/Reports/supReports.dart';
 import 'package:inventory/Stock/issuance.dart';
 import 'package:inventory/comp/suppliers.dart';
+import 'package:inventory/main.dart';
 import 'package:inventory/returns/replace.dart';
 import 'package:inventory/returns/returns.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Stock/inStock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10614,6 +10616,10 @@ var jsonStr = """
 
  """;
 class Dashboard extends StatefulWidget {
+  String userID;
+  Dashboard({
+    this.userID,
+});
   @override
   _DashboardState createState() => _DashboardState();
 }
@@ -10672,6 +10678,7 @@ class _DashboardState extends State<Dashboard> {
 
 
  final FirebaseMessaging _messaging = FirebaseMessaging();
+
   @override
   void initState() {
     _messaging.subscribeToTopic('procurement');
@@ -10738,8 +10745,25 @@ class _DashboardState extends State<Dashboard> {
         );
       },
     );
+    getStringValue();
   }
-  @override
+ String userCompany;
+ String currentUser;
+ getStringValue() async {
+   SharedPreferences prefs = await SharedPreferences.getInstance();
+   setState(() {
+     userCompany = prefs.getString('company');
+     currentUser = prefs.getString('user');
+   });
+
+ }
+ Logout()async {
+   SharedPreferences prefs = await SharedPreferences.getInstance();
+   prefs.remove('company');
+   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+   new Login()), (Route<dynamic> route) => false);
+ }
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: const Color(0xffC3B1E1),
@@ -10748,6 +10772,39 @@ class _DashboardState extends State<Dashboard> {
           centerTitle: true,
           elevation: 0.0,
           backgroundColor: const Color(0xffC3B1E1),
+          actions: <Widget>[
+
+            new Stack(
+              alignment: Alignment.topLeft,
+              children: <Widget>[
+                new PopupMenuButton(
+                  icon: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: new Icon(Icons.exit_to_app,
+                        color: Colors.red[900],)),
+                  onSelected: (String value) {
+                    switch (value) {
+                      case 'Logout':
+                        Logout();
+                        break;
+                    // Other cases for other menu options
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem<String>(
+                      value: "Logout",
+                      child: Row(
+                        children: <Widget>[
+                          Text("Logout"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+              ],
+            )
+          ],
         ),
         body:SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
@@ -10860,7 +10917,7 @@ class _DashboardState extends State<Dashboard> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.0,35.0,8.0,35.0),
                   child: StreamBuilder(
-                      stream: Firestore.instance.collection("company").document('pelt').snapshots(),
+                      stream: Firestore.instance.collection("company").document(userCompany).snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return Column(

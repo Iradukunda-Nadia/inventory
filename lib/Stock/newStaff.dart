@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class newStaff extends StatefulWidget {
   @override
@@ -26,8 +27,18 @@ class _newStaffState extends State<newStaff> {
     super.initState();
     qt = '0';
     isLoading = false;
+    getStringValue();
   }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
 
+  }
   void _submitCommand() {
     //get state of our Form
     final form = formKey.currentState;
@@ -51,14 +62,14 @@ class _newStaffState extends State<newStaff> {
         'date': DateFormat(' yyyy- MM - dd').format(DateTime.now()),
         "name": name,
         'id': id,
-        'company': 'pelt',
+        'company': userCompany,
         'assign': assignment,
         'region': region,
         'pfn': pfn,
         "uniform": {},
       });
 
-      Firestore.instance.collection('company').document('pelt').updateData({
+      Firestore.instance.collection('company').document(userCompany).updateData({
         'staff' : FieldValue.increment(1),
       });
 

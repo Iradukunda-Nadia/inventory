@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class supRep extends StatefulWidget {
   String supplier;
@@ -21,6 +22,22 @@ class supRep extends StatefulWidget {
 }
 
 class _supRepState extends State<supRep> {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getStringValue();
+  }
+
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
+  }
   String filePath;
 
   String fileP;
@@ -46,8 +63,8 @@ class _supRepState extends State<supRep> {
     rows.add(<String>['DATE', 'ITEM','QUANTITY','SUPPLIER', 'TOTAL (KSH.)'],);
     final QuerySnapshot result =
     searchController.text == '' ||  searchController.text == null  ?
-    await Firestore.instance.collection("addedStock").where('supplier', isEqualTo: widget.supplier).orderBy('timestamp', descending: true).getDocuments():
-    await Firestore.instance.collection("addedStock").where('month', isEqualTo: searchController.text).where('supplier', isEqualTo: widget.supplier).orderBy('timestamp', descending: true).getDocuments();
+    await Firestore.instance.collection("addedStock").where('company', isEqualTo: userCompany).where('supplier', isEqualTo: widget.supplier).orderBy('timestamp', descending: true).getDocuments():
+    await Firestore.instance.collection("addedStock").where('company', isEqualTo: userCompany).where('month', isEqualTo: searchController.text).where('supplier', isEqualTo: widget.supplier).orderBy('timestamp', descending: true).getDocuments();
     final List<DocumentSnapshot> documents = result.documents;
     if (documents != null) {
 //row refer to each column of a row in csv file and rows refer to each row in a file

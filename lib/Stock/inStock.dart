@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class inStock extends StatefulWidget {
@@ -22,6 +23,7 @@ class _inStockState extends State<inStock> {
     return qn.documents;
 
   }
+
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -33,10 +35,21 @@ class _inStockState extends State<inStock> {
     setState(() {
       _cat = "uniform";
     });
+    getStringValue();
   }
   var qtController = TextEditingController();
   var upController = TextEditingController();
 
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +136,7 @@ class _inStockState extends State<inStock> {
                 new Flexible(
                   fit: FlexFit.loose,
                   child: StreamBuilder(
-                      stream: Firestore.instance.collection("inStock").where("type", isEqualTo: _cat ).snapshots(),
+                      stream: Firestore.instance.collection("inStock").where("type", isEqualTo: _cat ).where('company', isEqualTo: userCompany).snapshots(),
                       builder: (context, snapshot){
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(
@@ -200,6 +213,17 @@ class _addStockState extends State<addStock> {
       _cat = "uniform";
     });
     isLoading = false;
+    getStringValue();
+  }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
   }
   var qtController = TextEditingController();
   var upController = TextEditingController();
@@ -226,7 +250,7 @@ class _addStockState extends State<addStock> {
     CollectionReference ref = Firestore.instance
         .collection('inStock');
 
-    QuerySnapshot eventsQuery =  await ref.where('item', isEqualTo: Item).getDocuments();
+    QuerySnapshot eventsQuery =  await ref.where('company', isEqualTo: userCompany).where('item', isEqualTo: Item).getDocuments();
 
     eventsQuery.documents.forEach((msgDoc) {
       msgDoc.reference.updateData({'count': FieldValue.increment(int.parse(qt))});
@@ -244,7 +268,7 @@ class _addStockState extends State<addStock> {
         "date" : DateFormat(' yyyy- MM - dd').format(DateTime.now()),
         "month" : DateFormat(' yyyy- MM').format(DateTime.now()),
         'timestamp': DateTime.now(),
-        "company": 'pelt',
+        "company": userCompany,
         'status': 'pending',
       });
     }).then((result) =>
@@ -297,7 +321,7 @@ class _addStockState extends State<addStock> {
                 SizedBox(
                   height: 60.0,
                   child:  new StreamBuilder<QuerySnapshot>(
-                      stream: Firestore.instance.collection("inStock").snapshots(),
+                      stream: Firestore.instance.collection("inStock").where('company', isEqualTo: userCompany).snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) return new Text("Please wait");
                         var length = snapshot.data.documents.length;
@@ -329,7 +353,7 @@ class _addStockState extends State<addStock> {
                 SizedBox(
                   height: 60.0,
                   child:  new StreamBuilder<QuerySnapshot>(
-                      stream: Firestore.instance.collection("suppliers").snapshots(),
+                      stream: Firestore.instance.collection("suppliers").where('company', isEqualTo: userCompany).snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) return new Text("Please wait");
                         var length = snapshot.data.documents.length;

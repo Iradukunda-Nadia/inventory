@@ -13,6 +13,8 @@ import 'package:pdf/widgets.dart' as pdf;
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class Summary extends StatefulWidget {
   final Map<String,dynamic> uniform ;
   final Map<String,dynamic> assets;
@@ -146,6 +148,24 @@ class SummaryDetail extends StatefulWidget {
 }
 
 class _SummaryDetailState extends State<SummaryDetail> {
+  String userCompany;
+  String currentUser;
+  String userLogo;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      userLogo = prefs.getString('logo');
+    });
+
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getStringValue();
+  }
 
   final _renderObjectKey = GlobalKey<ScaffoldState>();
   Future<Uint8List> _getWidgetImage() async {

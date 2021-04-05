@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class issuanceReport extends StatefulWidget {
   @override
@@ -37,7 +38,7 @@ class _issuanceReportState extends State<issuanceReport> {
 
     rows.add(<String>['DATE', 'ITEM','QUANTITY','NAME', 'ID'],);
     final QuerySnapshot result =
-    await Firestore.instance.collection("issueRep").orderBy('timestamp', descending: true).getDocuments();
+    await Firestore.instance.collection("issueRep").where('company', isEqualTo: userCompany).orderBy('timestamp', descending: true).getDocuments();
     final List<DocumentSnapshot> documents = result.documents;
     if (documents != null) {
 //row refer to each column of a row in csv file and rows refer to each row in a file
@@ -78,6 +79,22 @@ class _issuanceReportState extends State<issuanceReport> {
         },
       );
     }
+  }
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getStringValue();
+  }
+
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
   }
 
 
@@ -144,7 +161,7 @@ class _issuanceReportState extends State<issuanceReport> {
                     mainAxisSize:MainAxisSize.min,
                     children: <Widget>[
                       new StreamBuilder(
-                        stream: Firestore.instance.collection("issueRep").orderBy('timestamp', descending: true).snapshots(),
+                        stream: Firestore.instance.collection("issueRep").where('company', isEqualTo: userCompany).orderBy('timestamp', descending: true).snapshots(),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) return new Text('Loading...');
 

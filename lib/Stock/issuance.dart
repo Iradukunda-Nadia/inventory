@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:inventory/Stock/profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'newStaff.dart';
 
 class issue extends StatefulWidget {
@@ -18,6 +19,17 @@ class _issueState extends State<issue> {
     // TODO: implement initState
     super.initState();
     sQuery = '';
+    getStringValue();
+  }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
   }
   @override
   Widget build(BuildContext context) {
@@ -56,7 +68,7 @@ class _issueState extends State<issue> {
             ),
             Expanded(
               child: new StreamBuilder(
-                  stream: Firestore.instance.collection("issuance").orderBy('assign', descending: true).snapshots(),
+                  stream: Firestore.instance.collection("issuance").where('company', isEqualTo: userCompany).orderBy('assign', descending: true).snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       // <3> Retrieve `List<DocumentSnapshot>` from snapshot

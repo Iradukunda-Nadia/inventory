@@ -27,6 +27,17 @@ class _SuppliersState extends State<Suppliers> {
     // TODO: implement initState
     super.initState();
     sQuery = '';
+    getStringValue();
+  }
+  String userCompany;
+  String currentUser;
+  String userLogo;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      userLogo = prefs.getString('logo');
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -69,7 +80,7 @@ class _SuppliersState extends State<Suppliers> {
               ),
               Expanded(
                   child: new StreamBuilder(
-                      stream: Firestore.instance.collection("suppliers").snapshots(),
+                      stream: Firestore.instance.collection("suppliers").where('company', isEqualTo: userCompany).snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           // <3> Retrieve `List<DocumentSnapshot>` from snapshot
@@ -135,8 +146,18 @@ class _newSupplierState extends State<newSupplier> {
     super.initState();
     qt = '0';
     isLoading = false;
+    getStringValue();
   }
-
+  String userCompany;
+  String currentUser;
+  String userLogo;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      userLogo = prefs.getString('logo');
+    });
+  }
   void _submitCommand() {
     //get state of our Form
     final form = formKey.currentState;
@@ -157,11 +178,11 @@ class _newSupplierState extends State<newSupplier> {
       CollectionReference reference = Firestore.instance.collection('suppliers');
       await reference.add({
         "name": name,
-        'company': 'pelt',
+        'company': userCompany,
 
       });
 
-      Firestore.instance.collection('company').document('pelt').updateData({
+      Firestore.instance.collection('company').document(userCompany).updateData({
         'suppliers' : FieldValue.increment(1),
       });
 

@@ -14,6 +14,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:inventory/Stock/summary.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Return extends StatefulWidget {
   @override
@@ -29,6 +30,17 @@ class _ReturnState extends State<Return> {
     // TODO: implement initState
     super.initState();
     sQuery = '';
+    getStringValue();
+  }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
   }
   @override
   Widget build(BuildContext context) {
@@ -60,7 +72,7 @@ class _ReturnState extends State<Return> {
             ),
             Expanded(
                 child: new StreamBuilder(
-                    stream: Firestore.instance.collection("issuance").orderBy('assign', descending: true).snapshots(),
+                    stream: Firestore.instance.collection("issuance").where('company',isEqualTo: userCompany).orderBy('assign', descending: true).snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         // <3> Retrieve `List<DocumentSnapshot>` from snapshot
@@ -152,12 +164,23 @@ class _ClearanceState extends State<Clearance> {
     super.initState();
     qt = '0';
     isLoading = false;
+    getStringValue();
+  }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(widget.name),
         centerTitle: true,
         actions: <Widget>[
           new Stack(
@@ -199,6 +222,7 @@ class _ClearanceState extends State<Clearance> {
               name: widget.name,
               id: widget.id,
               docID: widget.docID,
+              company: userCompany,
             )));
         },
       ),
@@ -308,8 +332,9 @@ class details extends StatefulWidget {
   String name;
   String id;
   String docID;
+  String company;
   details({
-    this.name, this.id, this.docID
+    this.name, this.id, this.docID, this.company
   });
   @override
   _detailsState createState() => _detailsState();
@@ -333,7 +358,7 @@ class _detailsState extends State<details> {
           children: <Widget>[
             Text('Item ${cards.length + 1}'),
             new StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance.collection("inStock").snapshots(),
+                stream: Firestore.instance.collection("inStock").where('company', isEqualTo: widget.company).orderBy('item', descending: false).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return new Text("Please wait");
                   var length = snapshot.data.documents.length;
@@ -342,7 +367,7 @@ class _detailsState extends State<details> {
                     attribute: 'item',
                     items: snapshot.data.documents.map((
                         DocumentSnapshot document) {
-                      return DropdownMenuItem(
+                      return  DropdownMenuItem(
                           value: document.data["item"],
                           child: new Text(document.data["item"]));
                     }).toList(),
@@ -406,10 +431,21 @@ class _detailsState extends State<details> {
   @override
   void initState() {
     super.initState();
+    getStringValue();
     cards.add(createCard());
     isLoading = false;
-  }
 
+  }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
+  }
   final formKey = GlobalKey<FormState>();
   void _submitCommand() {
     //get state of our Form
@@ -450,7 +486,7 @@ class _detailsState extends State<details> {
     String bs64 = base64Encode(data);
 
     for (int i = 0; i < cards.length; i++) {
-      QuerySnapshot eventsQuery = await ref.where(
+      QuerySnapshot eventsQuery = await ref.where('company', isEqualTo: userCompany).where(
           'item', isEqualTo: itemTECs[i].text).getDocuments();
 
       eventsQuery.documents.forEach((msgDoc) {
@@ -464,6 +500,7 @@ class _detailsState extends State<details> {
             -(int.parse(qtTECs[i].text))),
         'dateCleared': DateFormat(' yyyy- MM - dd').format(DateTime.now()),
         'reason': reason,
+        'company': userCompany,
       });
 
       CollectionReference reference = Firestore.instance.collection('cleared');
@@ -476,7 +513,7 @@ class _detailsState extends State<details> {
         "dt": DateFormat('dd MMM yyyy').format(DateTime.now()),
         "month": DateFormat(' yyyy- MM').format(DateTime.now()),
         'timestamp': DateTime.now(),
-        "company": 'pelt',
+        "company": userCompany,
         'status': 'pending',
         'name': widget.name,
         'id': widget.id,
@@ -500,7 +537,7 @@ class _detailsState extends State<details> {
         "date": DateFormat(' yyyy- MM - dd').format(DateTime.now()),
         "month": DateFormat(' yyyy- MM').format(DateTime.now()),
         'timestamp': DateTime.now(),
-        "company": 'pelt',
+        "company": userCompany,
         'name': widget.name,
         'id': widget.id,
         'type': 'Cleared',

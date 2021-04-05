@@ -14,6 +14,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:inventory/Stock/summary.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class guardProfile extends StatefulWidget {
   final Map<String,dynamic> uniform ;
@@ -52,6 +53,17 @@ class _guardProfileState extends State<guardProfile> {
     super.initState();
     qt = '0';
     isLoading = false;
+    getStringValue();
+  }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
   }
   void _submitCommand() {
     //get state of our Form
@@ -77,9 +89,6 @@ class _guardProfileState extends State<guardProfile> {
 
       });
 
-      Firestore.instance.collection('company').document('pelt').updateData({
-        'clients' : FieldValue.increment(1),
-      });
 
     }).then((result) =>
 
@@ -141,6 +150,7 @@ class _guardProfileState extends State<guardProfile> {
                     name: widget.name,
                     id: widget.id,
                     docID: widget.docID,
+                    pfn: widget.pfn,
                     form: "issued",
                   )));
               },
@@ -159,6 +169,7 @@ class _guardProfileState extends State<guardProfile> {
               id: widget.id,
               docID: widget.docID,
               pfn: widget.pfn,
+              company: userCompany,
             )));
         },
       ),
@@ -416,9 +427,10 @@ class SOF extends StatefulWidget {
   String id;
   String docID;
   String pfn;
+  String company;
 
   SOF({
-    this.name, this.id, this.docID, this.pfn
+    this.name, this.id, this.docID, this.pfn, this.company,
 });
 
   @override
@@ -444,7 +456,7 @@ class _SOFState extends State<SOF> {
             SizedBox(
               height: 60.0,
               child:  new StreamBuilder<QuerySnapshot>(
-                  stream: Firestore.instance.collection("inStock").snapshots(),
+                  stream: Firestore.instance.collection("inStock").where('company', isEqualTo: widget.company).orderBy('item', descending: false).snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return new Text("Please wait");
                     var length = snapshot.data.documents.length;
@@ -519,9 +531,22 @@ class _SOFState extends State<SOF> {
   @override
   void initState() {
     super.initState();
+    getStringValue();
     cards.add(createCard());
     isLoading = false;
+
   }
+  String userCompany;
+  String currentUser;
+  getStringValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userCompany = prefs.getString('company');
+      currentUser = prefs.getString('user');
+    });
+
+  }
+
   final formKey = GlobalKey<FormState>();
   void _submitCommand() {
     //get state of our Form
@@ -562,7 +587,7 @@ class _SOFState extends State<SOF> {
     String bs64 = base64Encode(data);
 
     for (int i = 0; i < cards.length; i++) {
-      QuerySnapshot eventsQuery = await ref.where(
+      QuerySnapshot eventsQuery = await ref.where('company', isEqualTo: userCompany).where(
           'item', isEqualTo: itemTECs[i].text).getDocuments();
 
       eventsQuery.documents.forEach((msgDoc) {
@@ -586,7 +611,7 @@ class _SOFState extends State<SOF> {
           "dt": DateFormat('dd MMM yyyy').format(DateTime.now()),
           "month": DateFormat(' yyyy- MM').format(DateTime.now()),
           'timestamp': DateTime.now(),
-          "company": 'pelt',
+          "company": userCompany,
           'status': 'pending',
           'name': widget.name,
           'id': widget.id,
@@ -603,7 +628,7 @@ class _SOFState extends State<SOF> {
             'id': widget.id,
             'name': widget.name,
             'pfn': widget.pfn,
-            'company': 'pelt',
+            'company': userCompany,
 
           }, merge: true);
           Firestore.instance.collection('deductions')
@@ -629,7 +654,7 @@ class _SOFState extends State<SOF> {
           "date": DateFormat(' yyyy- MM - dd').format(DateTime.now()),
           "month": DateFormat(' yyyy- MM').format(DateTime.now()),
           'timestamp': DateTime.now(),
-          "company": 'pelt',
+          "company": userCompany,
           'name': widget.name,
           'id': widget.id,
           'type': 'issued',
