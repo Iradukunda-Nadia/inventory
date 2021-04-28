@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:downloads_path_provider/downloads_path_provider.dart';
+import 'package:ext_storage/ext_storage.dart';
 
 
 class Deductions extends StatefulWidget {
@@ -37,9 +37,7 @@ class _DeductionsState extends State<Deductions> {
   }
 
   Future<File> get _localF async {
-    // the downloads folder path
-    Directory tempDir = await DownloadsPathProvider.downloadsDirectory;
-    String tempPath = tempDir.path;
+    String tempPath = await ExtStorage.getExternalStoragePublicDirectory(ExtStorage.DIRECTORY_DOWNLOADS);
     var filePath = tempPath + '/${DateFormat('MMM-yyyy').format(DateTime.now())} DeductionsReport.csv';
     return File(filePath).create();
   }
