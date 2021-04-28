@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'package:flutter/services.dart';
 
@@ -16,19 +17,26 @@ Future<void> main() async {
 
   var uid = prefs.getString('company');
   print(uid);
-  runApp(
-    MaterialApp(
-        title: 'Inventory',
-        theme: ThemeData(
-          primaryColor: const Color(0xffC3B1E1,),
-          accentColor: Colors.purple[300],
+  await SentryFlutter.init(
+        (options) {
+      options.dsn = 'https://cceb974231b1498eb4c1dc6e4e5d19aa@o584251.ingest.sentry.io/5737517';
+    },
+    appRunner: () => runApp(
+      MaterialApp(
+          title: 'Inventory',
+          theme: ThemeData(
+            primaryColor: const Color(0xffC3B1E1,),
+            accentColor: Colors.purple[300],
 
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
 
 
-        home: uid == null ? Login() : Dashboard(userID: uid,)),
+          home: uid == null ? Login() : Dashboard(userID: uid,)),
+    ),
   );
+
+
 
 }
 

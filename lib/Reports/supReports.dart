@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,15 +42,12 @@ class _supRepState extends State<supRep> {
 
   String fileP;
 
-  Future<String> get _localP async {
-    final directory = await getExternalStorageDirectory();
-    return directory.absolute.path;
-  }
-
   Future<File> get _localF async {
-    final path = await _localP;
-    fileP = '/storage/emulated/0/Download/data.csv';
-    return File('/storage/emulated/0/Download/${DateFormat('MMM-yyyy').format(DateTime.now())} ${widget.supplier}.csv').create();
+    // the downloads folder path
+    Directory tempDir = await DownloadsPathProvider.downloadsDirectory;
+    String tempPath = tempDir.path;
+    var filePath = tempPath + '/${DateFormat('MMM-yyyy').format(DateTime.now())} ${widget.supplier}.csv';
+    return File(filePath).create();
   }
   getCsv() async {
 
@@ -78,7 +75,10 @@ class _supRepState extends State<supRep> {
         ];
         rows.add(recind);
       });
-      await Permission.storage.request().isGranted;
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
       File f = await _localF;
 
       String csv = const ListToCsvConverter().convert(rows);

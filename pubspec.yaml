@@ -41,6 +41,8 @@ dependencies:
   printing: any
   csv: ^4.0.3
   permission_handler:
+  sentry_flutter: ^4.0.6
+  downloads_path_provider: ^0.1.0
 
 
 dependency_overrides:

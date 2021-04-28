@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:downloads_path_provider/downloads_path_provider.dart';
 
 
 class Deductions extends StatefulWidget {
@@ -36,16 +36,14 @@ class _DeductionsState extends State<Deductions> {
 
   }
 
-  Future<String> get _localP async {
-    final directory = await getExternalStorageDirectory();
-    return directory.absolute.path;
+  Future<File> get _localF async {
+    // the downloads folder path
+    Directory tempDir = await DownloadsPathProvider.downloadsDirectory;
+    String tempPath = tempDir.path;
+    var filePath = tempPath + '/${DateFormat('MMM-yyyy').format(DateTime.now())} DeductionsReport.csv';
+    return File(filePath).create();
   }
 
-  Future<File> get _localF async {
-    final path = await _localP;
-    fileP = '/storage/emulated/0/Download/data.csv';
-    return File('/storage/emulated/0/Download/${DateFormat('MMM-yyyy').format(DateTime.now())} IssuanceReport.csv').create();
-  }
   getCsv() async {
 
     //create an element rows of type list of list. All the above data set are stored in associate list
@@ -72,7 +70,10 @@ class _DeductionsState extends State<Deductions> {
         rows.add(recind);
       });
 
-      await Permission.storage.request().isGranted;
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
       File f = await _localF;
 
       String csv = const ListToCsvConverter().convert(rows);
